@@ -43,7 +43,7 @@ Will update soon!
 
 ## TO-DO
 
- - Port program to the Arduino Pro Micro, which has a direct USB interface and can be configured as a native MIDI device
+ - Port program to the Arduino Pro Micro, which can be configured as a class-compliant USB MIDI device (or attempt to figure out V-USB or the micronucleus bootloader, which can be configured to do the same)
  - Eliminate peak detector with further programming
  - Go from half-bridge to quarter-bridge if possible
  - Update code to be more flexible with drums count up to six

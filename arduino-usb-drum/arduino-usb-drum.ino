@@ -13,7 +13,7 @@ const int sensitivity2 = DRUM_TWO_MAX / 10.;
 // Global variables
 int avg, avg2;                                              // Stores value of DC bias
 unsigned long hit_timestamp, hit_timestamp2;                // Stores time of hit for debouncing purposes
-int buff[10] = {0}, buff2[10] = {0}, iBuff = 0, iBuff2 = 0; // Circular buffer of past samples and its index, used to calculate maximum change
+int buff[10] = {0}, buff2[10] = {0}, iBuff = 0, iBuff2 = 0; // Circular buffer of past samples and its index
 
 void setup() {
   // put your setup code here, to run once:
@@ -63,6 +63,8 @@ void loop() {
   for(int i = 0; i < 10; i++) if(val > buff[i] + sensitivity1) trigger = true;
   bool trigger2 = false;
   for(int i = 0; i < 10; i++) if(val2 > buff2[i] + sensitivity2) trigger2 = true;
+
+  // Finds peak then sends MIDI note
   if(trigger){
     int pulse_max = 0;    // Stores maximum value of pulse
     hit_timestamp = micros();
@@ -81,7 +83,9 @@ void loop() {
         buff[iBuff] = val;
       }
     }
-    if(pulse_max > DRUM_ONE_MAX) pulse_max = DRUM_ONE_MAX;  // Caps maximum value to prevent overflow of map function with an upper param of DRUM_ONE_MAX
+    if(pulse_max > DRUM_ONE_MAX) pulse_max = DRUM_ONE_MAX;  // Caps maximum value to prevent overflow
+
+    // MIDI output to Serial
     Serial.write(0b10010000);                             // Sends inital NOTEON byte in MIDI
     Serial.write(MIDI_NOTE);                              // Sends user-defined MIDI note
     Serial.write(map(pulse_max, 0, 80, 20, 127));         // Maps maximum value to note velocity then sends
@@ -97,13 +101,15 @@ void loop() {
       buff[iBuff] = val;
     }
   }
-  if(trigger2){   // Starts measuring if derviative exceeds user-set minimum value (assists in debouncing, but reduces sensitivity)
-    int pulse_max = 0;    // Stores maximum value of pulse
+
+  // Same as above, but with different variables for drum 2
+  if(trigger2){
+    int pulse_max = 0;
     hit_timestamp2 = micros();
-    while(micros() < hit_timestamp2 + DEBOUNCE_TIME){   // Holds uC in recording stage until debounce time passes
+    while(micros() < hit_timestamp2 + DEBOUNCE_TIME){
       val2 = analogRead(A2) - avg2;
       if(abs(val2) <= DEAD_RANGE) val2 = 0;
-      if(val2 > pulse_max) pulse_max = val2;    // Raises maximum value if it is exceeded
+      if(val2 > pulse_max) pulse_max = val2;
       
       // Adds reading to buffer 2
       if(iBuff2 < 10){
@@ -115,10 +121,10 @@ void loop() {
         buff2[iBuff2] = val2;
       }
     }
-    if(pulse_max > DRUM_TWO_MAX) pulse_max = DRUM_TWO_MAX;  // Caps maximum value to prevent overflow of map function with an upper param of DRUM_TWO_MAX
-    Serial.write(0b10010000);                             // Sends inital NOTEON byte in MIDI
-    Serial.write(MIDI_NOTE+1);                            // Sends user-defined MIDI note
-    Serial.write(map(pulse_max, 0, 200, 20, 127));        // Maps maximum value to note velocity then sends
+    if(pulse_max > DRUM_TWO_MAX) pulse_max = DRUM_TWO_MAX;
+    Serial.write(0b10010000);
+    Serial.write(MIDI_NOTE+1);
+    Serial.write(map(pulse_max, 0, 200, 20, 127));
   }
   else{
     // Adds reading to buffer 2
