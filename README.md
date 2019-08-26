@@ -39,7 +39,7 @@ The following are required regardless of drum count:
 
 ## Demonstration
 
-Will update soon!
+[![arduino-usb-drum demonstration](http://img.youtube.com/vi/Jy1ZnwRxwZo/0.jpg)](https://www.youtube.com/watch?v=Jy1ZnwRxwZo)
 
 ## TO-DO
 
