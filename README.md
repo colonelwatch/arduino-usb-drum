@@ -1,6 +1,6 @@
 # arduino-usb-drum
 
-![Main Image](images/Main.jpg)
+![Main Image](images/main.jpg)
 
 This project began as an experiment with strain guages which eventually became a drum. Here, using strain guages instead of the typical piezo sensor for drums enables more flexible design, such as making a 3d-printable model. It runs on an Arduino Uno, which has its serial interface turned into a MIDI input using [LoopMIDI](https://www.tobias-erichsen.de/software/loopmidi.html) and [Hairless MIDI](https://projectgus.github.io/hairless-midiserial/) running on the computer, and feeds into Ableton Live. Everything required to recreate this project is provided, but the code requires calibration due to variability in construction. 
 
