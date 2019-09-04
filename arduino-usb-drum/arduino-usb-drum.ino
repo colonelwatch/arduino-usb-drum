@@ -65,10 +65,10 @@ void loop() {
   for(int i = 0; i < 10; i++) if(val2 > buff2[i] + sensitivity2) trigger2 = true;
 
   // Finds peak then sends MIDI note
-  if(trigger){
+  if(trigger && micros() > hit_timestamp + DEBOUNCE_TIME){
     int pulse_max = 0;    // Stores maximum value of pulse
     hit_timestamp = micros();
-    while(micros() < hit_timestamp + DEBOUNCE_TIME){   // Holds uC in recording stage until debounce time passes
+    while(val > buff[iBuff] - DEAD_RANGE){   // Holds uC in recording stage until measured value starts to fall
       val = analogRead(A0) - avg;
       if(abs(val) <= DEAD_RANGE) val = 0;
       if(val > pulse_max) pulse_max = val;    // Raises maximum value if it is exceeded
@@ -103,10 +103,10 @@ void loop() {
   }
 
   // Same as above, but with different variables for drum 2
-  if(trigger2){
+  if(trigger2 && micros() > hit_timestamp2 + DEBOUNCE_TIME){
     int pulse_max = 0;
     hit_timestamp2 = micros();
-    while(micros() < hit_timestamp2 + DEBOUNCE_TIME){
+    while(val2 > buff2[iBuff2] - DEAD_RANGE){
       val2 = analogRead(A2) - avg2;
       if(abs(val2) <= DEAD_RANGE) val2 = 0;
       if(val2 > pulse_max) pulse_max = val2;
